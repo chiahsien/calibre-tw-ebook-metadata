@@ -21,7 +21,7 @@ class PubuBooks(Source):
 
     name = 'Pubu Books'
     author = 'Nelson'
-    version = (1, 0, 0)
+    version = (1, 1, 0)
     minimum_calibre_version = (5, 0, 0)
 
     description = _(
