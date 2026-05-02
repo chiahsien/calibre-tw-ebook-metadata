@@ -38,6 +38,7 @@ class ReadmooBooks(Source):
     cached_cover_url_is_reliable = True
 
     SUGGEST_URL = 'https://readmoo.com/search/suggest'
+    SEARCH_URL = 'https://readmoo.com/search/keyword'
     BOOK_URL = 'https://readmoo.com/book/%s'
 
     def get_book_url(self, identifiers):
@@ -67,14 +68,23 @@ class ReadmooBooks(Source):
         identifiers={},
         timeout=30,
     ):
-        query = self._build_search_query(title, authors, identifiers)
-        if not query:
-            log.error('Readmoo: Insufficient metadata to construct query')
-            return
+        isbn = check_isbn(identifiers.get('isbn', None))
 
-        book_urls = self._search(log, query, timeout)
+        # ISBN search uses /search/keyword (suggest endpoint ignores ISBN)
+        book_urls = []
+        if isbn:
+            book_urls = self._search_keyword(log, isbn, timeout)
+
+        # Title/author search uses /search/suggest (fast JSON)
+        if not book_urls:
+            query = self._build_search_query(title, authors, identifiers)
+            if not query:
+                log.error('Readmoo: Insufficient metadata to construct query')
+                return
+            book_urls = self._search(log, query, timeout)
+
         if not book_urls and title:
-            log.info('Readmoo: No results for query: %s, trying title' % query)
+            log.info('Readmoo: No suggest results, trying title fallback')
             title_tokens = list(self.get_title_tokens(title))
             if authors:
                 author_tokens = list(
@@ -116,7 +126,7 @@ class ReadmooBooks(Source):
             if cover_url:
                 self.cache_identifier_to_cover_url(readmoo_id, cover_url)
 
-            if isbn and mi.isbn and check_isbn(mi.isbn) != isbn:
+            if isbn and (not mi.isbn or check_isbn(mi.isbn) != isbn):
                 unmatched.append(mi)
             else:
                 matched.append(mi)
@@ -180,10 +190,6 @@ class ReadmooBooks(Source):
             log.exception('Readmoo: Failed to download cover from:', cached_url)
 
     def _build_search_query(self, title, authors, identifiers):
-        isbn = check_isbn(identifiers.get('isbn', None))
-        if isbn:
-            return isbn
-
         tokens = []
         if title:
             title_tokens = list(self.get_title_tokens(title))
@@ -225,6 +231,23 @@ class ReadmooBooks(Source):
             if item.get('type') == 'product' and item.get('url')
         ]
         log.info('Readmoo: Found %d results' % len(urls))
+        return urls
+
+    def _search_keyword(self, log, query, timeout):
+        url = '%s?q=%s' % (self.SEARCH_URL, quote(query))
+        log.info('Readmoo: Keyword search: %s' % url)
+
+        br = self.browser
+        try:
+            raw = br.open_novisit(url, timeout=timeout).read()
+        except Exception as e:
+            log.exception('Readmoo: Keyword search failed: %s' % e)
+            return []
+
+        html = raw.decode('utf-8', errors='replace') if isinstance(raw, bytes) else raw
+        book_ids = list(dict.fromkeys(re.findall(r'/book/(\d+)', html)))
+        urls = [self.BOOK_URL % bid for bid in book_ids]
+        log.info('Readmoo: Keyword search found %d results' % len(urls))
         return urls
 
     def _extract_id_from_url(self, url):

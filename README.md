@@ -29,7 +29,7 @@ Calibre 書籍元資料下載外掛，資料來源為台灣繁體中文電子書
 | 來源 | 網站 | 元資料欄位 |
 |------|------|------------|
 | **Readmoo** | [readmoo.com](https://readmoo.com) | 書名、作者、出版社、出版日期、ISBN、標籤、簡介、封面、語言 |
-| **HyRead** | [ebook.hyread.com.tw](https://ebook.hyread.com.tw) | 書名、作者、出版社、出版日期、ISBN、標籤、簡介、封面、語言 |
+| **HyRead** | [ebook.hyread.com.tw](https://ebook.hyread.com.tw) | 書名、作者、出版社、出版日期、ISBN、標籤、簡介、封面、語言、系列 |
 | **Pubu** | [pubu.com.tw](https://www.pubu.com.tw) | 書名、作者、出版社、出版日期、ISBN、標籤、簡介、封面、語言、系列 |
 
 ## 安裝方式
@@ -78,7 +78,7 @@ Calibre 書籍元資料下載外掛，資料來源為台灣繁體中文電子書
 ### 搜尋行為
 
 - **書名 + 作者** 是三個外掛的主要搜尋策略。
-- **ISBN** 用於結果過濾，而非搜尋關鍵字（HyRead 除外，有專用 ISBN 搜尋欄位）。
+- **ISBN** 可作為搜尋關鍵字（Readmoo、HyRead）或用於結果過濾（Pubu）。
 - 提供 ISBN 但無精確比對時，仍會回傳結果作為備選，不會直接捨棄。
 
 ## 系統需求

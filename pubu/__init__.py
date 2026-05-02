@@ -104,7 +104,7 @@ class PubuBooks(Source):
             if cover_url:
                 self.cache_identifier_to_cover_url(pubu_id, cover_url)
 
-            if isbn and mi.isbn and check_isbn(mi.isbn) != isbn:
+            if isbn and (not mi.isbn or check_isbn(mi.isbn) != isbn):
                 unmatched.append(mi)
             else:
                 matched.append(mi)

@@ -29,7 +29,7 @@ Each plugin downloads **metadata and covers** via Calibre's built-in "Download m
 | Source | Site | Metadata Fields |
 |--------|------|-----------------|
 | **Readmoo** | [readmoo.com](https://readmoo.com) | Title, Authors, Publisher, Pub Date, ISBN, Tags, Description, Cover, Language |
-| **HyRead** | [ebook.hyread.com.tw](https://ebook.hyread.com.tw) | Title, Authors, Publisher, Pub Date, ISBN, Tags, Description, Cover, Language |
+| **HyRead** | [ebook.hyread.com.tw](https://ebook.hyread.com.tw) | Title, Authors, Publisher, Pub Date, ISBN, Tags, Description, Cover, Language, Series |
 | **Pubu** | [pubu.com.tw](https://www.pubu.com.tw) | Title, Authors, Publisher, Pub Date, ISBN, Tags, Description, Cover, Language, Series |
 
 ## Installation
@@ -78,7 +78,7 @@ Each plugin downloads **metadata and covers** via Calibre's built-in "Download m
 ### Search Behavior
 
 - **Title + Author** is the primary search strategy for all three plugins.
-- **ISBN** is used for post-filtering, not as a search query (except HyRead, which has a dedicated ISBN search field).
+- **ISBN** can be used as a search query (Readmoo, HyRead) or for post-filtering (Pubu).
 - When an ISBN is provided and no exact ISBN match is found, results are still returned as fallback rather than discarded.
 
 ## Requirements
