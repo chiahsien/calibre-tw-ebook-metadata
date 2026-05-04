@@ -23,7 +23,7 @@ class ReadmooBooks(Source):
 
     name = 'Readmoo Books'
     author = 'Nelson'
-    version = (1, 1, 0)
+    version = (1, 1, 1)
     minimum_calibre_version = (5, 0, 0)
 
     description = _(
