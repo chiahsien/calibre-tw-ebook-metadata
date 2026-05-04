@@ -4,7 +4,9 @@ __license__ = 'GPL v3'
 __copyright__ = '2026'
 __docformat__ = 'restructuredtext en'
 
+import random
 import re
+import time
 from urllib.parse import quote
 
 try:
@@ -36,6 +38,20 @@ class HyReadBooks(Source):
     ])
     supports_gzip_transfer_encoding = True
     cached_cover_url_is_reliable = True
+
+    @property
+    def browser(self):
+        if self._browser is None:
+            from calibre import browser as create_browser
+            ver = '.'.join(map(str, self.version))
+            ua = (
+                'calibre-tw-ebook-metadata/%s'
+                ' (+https://github.com/chiahsien/calibre-tw-ebook-metadata)'
+            ) % ver
+            self._browser = create_browser(user_agent=ua)
+            if self.supports_gzip_transfer_encoding:
+                self._browser.set_handle_gzip(True)
+        return self._browser.clone_browser()
 
     SEARCH_URL = 'https://ebook.hyread.com.tw/searchList.jsp'
     BOOK_URL = 'https://ebook.hyread.com.tw/bookDetail.jsp?id=%s'
@@ -89,6 +105,9 @@ class HyReadBooks(Source):
         for relevance, hyread_id in enumerate(book_ids[:5]):
             if abort.is_set():
                 break
+
+            if relevance > 0:
+                time.sleep(random.uniform(0.3, 1.0))
 
             mi = self._fetch_book_metadata(log, hyread_id, timeout)
             if mi is None:
